@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Image Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+  </head>
+  <body>
+    <main class="stage">
+      <img id="viewer" alt="Indexed image" src="" />
+      <div class="hud">
+        <div class="hud-left">
+            <span class="chip"><span id="idx">0</span> / <span id="count">{{ count }}</span></span>
+            <span class="chip" id="status">loading…</span>
+        </div>
+
+        <div class="hud-center">
+            <span class="chip"><span id="date">—</span></span>
+            <span class="chip"><span id="filename">—</span></span>
+        </div>
+
+        <div class="hud-right">
+            <button id="prev" class="btn">◀︎ Prev</button>
+            <button id="next" class="btn">Next ▶︎</button>
+            <button id="pause" class="btn">Pause ⏸</button>
+            <button id="play" class="btn" style="display:none;">Play ▶︎</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      window.APP_CONFIG = {
+        intervalMs: {{ interval_ms|tojson }},
+        initialCount: {{ count|tojson }}
+      };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
