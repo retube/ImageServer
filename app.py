@@ -42,6 +42,7 @@ INTERVAL_MS: int = 3000  # client refresh interval in ms
 # Supported image extensions
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff", ".svg"}
 
+DUMMY = []
 
 # ------------------------------------------------------------------------------
 # Directory indexing
