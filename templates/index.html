@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Image Viewer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" />
+      <script src="{{ url_for('static', filename='weather.js') }}"></script>
   </head>
   <body>
     <main class="stage">
@@ -35,6 +36,11 @@
         initialCount: {{ count|tojson }}
       };
     </script>
+
+    <script>
+        getCurrentWeather(51.5072, -0.1276).then(console.log);
+    </script>
+
     <script src="{{ url_for('static', filename='app.js') }}"></script>
   </body>
 </html>
