@@ -62,6 +62,11 @@ body {
   font-size: 0.9rem;
 }
 
+.chip > span:first-child {
+  display: inline-flex;
+  gap: .25rem;
+}
+
 .btn {
   padding: .45rem .75rem;
   border-radius: 10px;
