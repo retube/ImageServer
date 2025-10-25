@@ -24,25 +24,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 from functools import lru_cache
-
 from flask import Flask, abort, jsonify, make_response, render_template, send_file
-
-# Optional Pillow for EXIF parsing
-try:
-    from PIL import Image, ExifTags  # type: ignore
-except Exception:
-    Image = None  # type: ignore
-    ExifTags = None  # type: ignore
+from PIL import Image, ExifTags
 
 app = Flask(__name__)
 
 FILES: List[Path] = []   # indexed image files
-INTERVAL_MS: int = 3000  # client refresh interval in ms
+INTERVAL_MS: int = 10000  # client refresh interval in ms
 
 # Supported image extensions
-IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff", ".svg"}
-
-DUMMY = []
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
 
 # ------------------------------------------------------------------------------
 # Directory indexing
@@ -76,7 +67,7 @@ def _exif_date_from_pillow(img: "Image.Image") -> str | None:
         if not raw:
             return None
         tagmap = {ExifTags.TAGS.get(k, k): v for k, v in raw.items()} if ExifTags else raw
-        for key in ("DateTimeOriginal", "DateTime", "DateTimeDigitized"):
+        for key in ["DateTimeOriginal"]:
             val = tagmap.get(key)
             if not val:
                 continue
@@ -110,16 +101,10 @@ def _compute_meta_cached(path_str: str, mtime: float) -> dict:
                     return {"date_taken": iso, "date_source": "exif", "filename": path.name}
         except Exception:
             pass
-    # Fallback: filesystem mtime (UTC ISO)
-    try:
-        dt = datetime.fromtimestamp(mtime, tz=timezone.utc)
-        return {
-            "date_taken": dt.isoformat().replace("+00:00", "Z"),
-            "date_source": "file:mtime",
-            "filename": path.name,
-        }
-    except Exception:
-        return {"date_taken": None, "date_source": "unknown", "filename": path.name}
+
+    date_taken = "2010-2012" if "2010-2012" in str(path) else None
+
+    return {"date_taken": date_taken, "date_source": "unknown", "filename": path.name}
 
 
 # ------------------------------------------------------------------------------
@@ -187,7 +172,7 @@ def main():
     parser.add_argument("--all-files", action="store_true", help="Index ALL files, not just images")
     args = parser.parse_args()
 
-    INTERVAL_MS = max(250, int(args.interval_ms))
+    INTERVAL_MS = max(3000, int(args.interval_ms))
     FILES = index_directory(args.directory, all_files=args.all_files)
 
     if not FILES:
