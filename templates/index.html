@@ -12,13 +12,15 @@
       <img id="viewer" alt="Indexed image" src="" />
       <div class="hud">
         <div class="hud-left">
-            <span class="chip"><span id="idx">0</span> / <span id="count">{{ count }}</span></span>
-            <span class="chip" id="status">loading…</span>
+            <span class="chip">
+                <span id="idx">0</span> / <span id="count">{{ count }}</span>:
+                <span id="status">loading…</span>
+                <span id="filename">—</span>
+            </span>
         </div>
 
         <div class="hud-center">
             <span class="chip"><span id="date">—</span></span>
-            <span class="chip"><span id="filename">—</span></span>
         </div>
 
         <div class="hud-right">
