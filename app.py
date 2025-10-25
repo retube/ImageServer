@@ -132,7 +132,7 @@ def healthz():
 
 @app.get("/count")
 def count():
-    return jsonify({"count": len(FILES)})
+    return {"count": len(FILES)}
 
 
 @app.get("/meta/<int:index>")
