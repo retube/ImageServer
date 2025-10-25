@@ -52,8 +52,9 @@ body {
 .hud-right { justify-self: end; }
 
 .chip {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: .25rem;
   padding: .25rem .5rem;
   border-radius: 999px;
