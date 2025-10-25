@@ -37,7 +37,8 @@
       };
     </script>
 
-    <script>
+    <script type="module">
+        import { getCurrentWeather } from "{{ url_for('static', filename='weather.js') }}";
         getCurrentWeather(51.5072, -0.1276).then(console.log);
     </script>
 
