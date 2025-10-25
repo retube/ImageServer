@@ -60,6 +60,6 @@ if __name__ == "__main__":
     #
     # image_path = sys.argv[1]
 
-    image_path = r"D:\Card backups\backup\Card1\100CANON\IMG_1889.JPG"
+    image_path = r"D:\Card backups\backup\Card1\100CANON\IMG_2567.JPG"
 
     extract_exif_data(image_path)
