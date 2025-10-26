@@ -163,4 +163,17 @@
   refreshCount();
   showByPos(0);
   start();
+  // Add event listeners for dropdown options
+  document.querySelectorAll('.dropdown-content a').forEach(item => {
+    item.addEventListener('click', event => {
+      event.preventDefault();
+      const newInterval = Number(event.target.getAttribute('data-interval'));
+      if (newInterval) {
+        INTERVAL_MS = newInterval;
+        if (timer) {
+          start(); // Restart the timer with the new interval
+        }
+      }
+    });
+  });
 })();
