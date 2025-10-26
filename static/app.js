@@ -102,24 +102,27 @@
     img.src = srcFor(index);
     idxEl.textContent = String(index);
 
-    // Optimistically clear date while fetching fresh meta
+    // Optimistically clear date and filename while waiting for image to load
     setDateText('…');
     setFilenameText('…')
 
-    // Fetch & display EXIF date
-    const meta = await fetchMeta(index);
-    if (meta && meta.date_taken) {
-      const pretty = formatDate(meta.date_taken) || meta.date_taken;
-      setDateText(pretty);
-    } else {
-      setDateText('—');
-    }
+    // Wait for the image to load before fetching meta data
+    img.onload = async function() {
+      // Fetch & display EXIF date
+      const meta = await fetchMeta(index);
+      if (meta && meta.date_taken) {
+        const pretty = formatDate(meta.date_taken) || meta.date_taken;
+        setDateText(pretty);
+      } else {
+        setDateText('—');
+      }
 
-    if (meta && meta.filename) {
+      if (meta && meta.filename) {
         setFilenameText(meta.filename);
-    } else {
+      } else {
         setFilenameText('—');
-    }
+      }
+    };
 
   }
 
