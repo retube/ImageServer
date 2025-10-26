@@ -60,7 +60,6 @@ body {
   border-radius: 999px;
   background: rgba(255,255,255,0.12);
   font-size: 0.9rem;
-  color: #aaa;
 }
 
 .chip > span:first-child {

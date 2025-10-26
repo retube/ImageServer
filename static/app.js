@@ -103,8 +103,8 @@
     idxEl.textContent = String(index);
 
     // Optimistically clear date and filename while waiting for image to load
-    setDateText('…');
-    setFilenameText('…')
+    //setDateText('…');
+    //setFilenameText('…')
 
     // Wait for the image to load before fetching meta data
     img.onload = async function() {
