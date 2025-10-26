@@ -67,7 +67,7 @@ def _exif_date_from_pillow(img: "Image.Image") -> str | None:
         if not raw:
             return None
         tagmap = {ExifTags.TAGS.get(k, k): v for k, v in raw.items()} if ExifTags else raw
-        for key in ["DateTimeOriginal"]:
+        for key in ["DateTimeOriginal", "DateTime", "DateTimeDigitized"]:
             val = tagmap.get(key)
             if not val:
                 continue
@@ -91,8 +91,15 @@ def _compute_meta_cached(path_str: str, mtime: float) -> dict:
     Compute metadata for a file path. Cached by (path, mtime) so changes invalidate.
     Returns a dict with keys: date_taken, date_source, filename.
     """
+    date_taken = None
     path = Path(path_str)
-    # Try EXIF first (when Pillow available and likely an image)
+
+    # Special handling for the images in the 2010-2012 folder which were scanned from prints,
+    # so have the scan date in the exif data and not the actual snapshot date
+    if "2010-2012" in str(path):
+        return {"date_taken": "2010-2012", "date_source": "unknown", "filename": path.name}
+
+    # Then try EXIF (if likely an image)
     if Image and path.suffix.lower() in IMAGE_EXTS:
         try:
             with Image.open(path) as im:
@@ -101,8 +108,6 @@ def _compute_meta_cached(path_str: str, mtime: float) -> dict:
                     return {"date_taken": iso, "date_source": "exif", "filename": path.name}
         except Exception:
             pass
-
-    date_taken = "2010-2012" if "2010-2012" in str(path) else None
 
     return {"date_taken": date_taken, "date_source": "unknown", "filename": path.name}
 
