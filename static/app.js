@@ -2,7 +2,7 @@
 (function () {
   const config = window.APP_CONFIG || { intervalMs: 3000, initialCount: 0 };
 
-  const INTERVAL_MS = Number(config.intervalMs) || 3000;
+  let INTERVAL_MS = Number(config.intervalMs) || 3000;
   let count = Number(config.initialCount) || 0;
 
   // Shuffled order and position within it
@@ -20,6 +20,7 @@
   const nextBtn = document.getElementById('next');
   const pauseBtn = document.getElementById('pause');
   const playBtn = document.getElementById('play');
+  const speedBtn = document.getElementById('speed');
 
   function setStatus(t) { statusEl.textContent = t; }
   function setCount(n) { countEl.textContent = n; }
@@ -170,6 +171,7 @@
       const newInterval = Number(event.target.getAttribute('data-interval'));
       if (newInterval) {
         INTERVAL_MS = newInterval;
+        speedBtn.innerText = event.target.innerText
         if (timer) {
           start(); // Restart the timer with the new interval
         }

@@ -122,3 +122,10 @@ body {
   background-color: rgba(255,255,255,0.15);
 }
 
+#pause, #play {
+    width: 85px;
+}
+
+#speed {
+    width: 75px;
+}
