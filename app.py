@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 from functools import lru_cache
+import random
 from flask import Flask, abort, jsonify, make_response, render_template, send_file
 from PIL import Image, ExifTags
 
@@ -125,7 +126,9 @@ def count():
     return {"count": len(FILES)}
 
 
-@app.get("/meta/<int:index>")
+@app.get("/should_load_next")
+def should_load_next():
+    return jsonify({"load_next": random.choice([True, False])})
 def get_meta(index: int):
     if index < 0 or index >= len(FILES):
         abort(404, description=f"Index out of range: {index}")
