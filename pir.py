@@ -11,7 +11,7 @@ def safe_run():
     pass
 
 def screen_on():
-    Is there 
+    print("hello")
 
 def run():
     #print(STATUS_FILE)
