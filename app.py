@@ -32,6 +32,7 @@ app = Flask(__name__)
 
 FILES: List[Path] = []   # indexed image files
 INTERVAL_MS: int = 10000  # client refresh interval in ms
+SCREEN_STATUS_FILE: str = ""
 
 # Supported image extensions
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
@@ -128,7 +129,14 @@ def count():
 
 @app.get("/should_load_next")
 def should_load_next():
-    return jsonify({"load_next": random.choice([True, False])})
+    try:
+        with open(SCREEN_STATUS_FILE) as f:
+            return {"load_next": f.read().strip() == "ON"}
+    except FileNotFoundError as e:
+        print(e)
+        pass
+
+    return {"load_next": True}
 
 
 @app.get("/meta/<int:index>")
@@ -173,18 +181,20 @@ def index_page():
 # Entrypoint
 # ------------------------------------------------------------------------------
 def main():
-    global FILES, INTERVAL_MS
+    global FILES, INTERVAL_MS, SCREEN_STATUS_FILE
 
     parser = argparse.ArgumentParser(description="Simple rotating image HTTP server")
     parser.add_argument("directory", type=Path, help="Directory to recursively index")
+    parser.add_argument("--screen_status_file", type=Path, default="static/screen_status.txt", help="Location of screen status file written by PIR")
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=8000, help="Port to bind (default: 8000)")
-    parser.add_argument("--interval-ms", type=int, default=3000, help="Client refresh interval in ms")
+    parser.add_argument("--interval-ms", type=int, default=10000, help="Client refresh interval in ms")
     parser.add_argument("--all-files", action="store_true", help="Index ALL files, not just images")
     args = parser.parse_args()
 
     INTERVAL_MS = max(3000, int(args.interval_ms))
     FILES = index_directory(args.directory, all_files=args.all_files)
+    SCREEN_STATUS_FILE = args.screen_status_file
 
     if not FILES:
         print("[warn] No files found to index. The page will show 'no files'.")
