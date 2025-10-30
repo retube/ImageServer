@@ -96,14 +96,18 @@
 
   async function showByPos(p) {
     if (count === 0 || order.length === 0) { setStatus('no files'); return; }
+    pos = ((p % order.length) + order.length) % order.length; // safe modulo
+
     // Make an AJAX call to check if we should load the next image
     try {
       const response = await fetch('/should_load_next', { cache: 'no-store' });
       if (!response.ok) throw new Error('HTTP ' + response.status);
       const result = await response.json();
       if (!result.load_next) {
-        setStatus('staying on current image');
+        setStatus('auto paused');
         return;
+      } else {
+          setStatus('playing');
       }
     } catch (e) {
       console.error(e);

@@ -129,6 +129,9 @@ def count():
 @app.get("/should_load_next")
 def should_load_next():
     return jsonify({"load_next": random.choice([True, False])})
+
+
+@app.get("/meta/<int:index>")
 def get_meta(index: int):
     if index < 0 or index >= len(FILES):
         abort(404, description=f"Index out of range: {index}")
