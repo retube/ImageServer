@@ -9,12 +9,12 @@
   </head>
   <body>
     <main class="stage">
-      <img id="viewer" alt="Indexed image" src="" />
+      <img id="viewer" alt="Indexed image" src="{{ url_for('static', filename='image_viewer_black.jpg') }}" />
       <div class="hud">
         <div class="hud-left">
             <span class="chip_info">
                 <span>
-                    <span id="idx">0</span> / <span id="count">{{ count }}</span>:
+                    <span id="idx">-</span> / <span id="count">{{ count }}</span>:
                     <span id="status">loading…</span>
                 </span>
                 <span id="filename">—</span>
