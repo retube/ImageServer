@@ -32,7 +32,7 @@ app = Flask(__name__)
 
 FILES: List[Path] = []   # indexed image files
 INTERVAL_MS: int = 10000  # client refresh interval in ms
-SCREEN_STATUS_FILE: str = "temp/screen_status_txt"
+SCREEN_STATUS_FILE: str = "temp/screen_status.txt"
 
 # Supported image extensions
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
