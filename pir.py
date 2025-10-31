@@ -4,13 +4,14 @@ from pathlib import Path
 from gpiozero import MotionSensor
 from subprocess import run, CalledProcessError
 from time import time, sleep
-import os, signal
+import os, signal, logging, logging.handlers
 
 STATUS_FILE: str = "temp/screen_status.txt"
 PIR_GPIO = 17
 QUIET_SECS = 300
 DISPLAY_ENV = ":0"
 XAUTHORITY = "/home/rich/.Xauthority"
+LOG_PATH = "/home/rich/temp/pir.log"
 
 os.environ["DISPLAY"] = DISPLAY_ENV
 os.environ["XAUTHORITY"] = XAUTHORITY
@@ -19,6 +20,17 @@ pir = MotionSensor(PIR_GPIO)
 last_motion = time()
 display_on = True
 running = True
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    handlers=[
+        logging.handlers.RotatingFileHandler(
+            LOG_PATH, maxBytes=512*1024, backupCount=5, encoding="utf-8"
+        )
+    ],
+)
+log = logging.getLogger("pir")
 
 def update_state(on: bool):
     global display_on
@@ -33,17 +45,17 @@ def safe_run(cmd):
         pass
 
 def screen_on():
-    print(f'Turning screen ON {time()}')
+    log.info(f'Turning screen ON {time()}')
     safe_run(["xset", "dpms", "force", "on"])
     update_state(True)
 
 def screen_off():
-    print(f'Turning screen OFF {time()}')
+    log.info(f'Turning screen OFF {time()}')
     safe_run(["xset", "dpms", "force", "off"])
     update_state(False)
 
 def on_motion():
-    print(f'Motion detected {time()}')
+    log.info(f'Motion detected {time()}')
     global last_motion
     last_motion = time()
     if not display_on:
@@ -52,7 +64,7 @@ def on_motion():
 pir.when_motion = on_motion
 
 def shutdown(signum, frame):
-    print("Caught shutdown")
+    log.info("Caught shutdown")
     global running
     running = False
     
@@ -61,7 +73,7 @@ signal.signal(signal.SIGTERM, shutdown)
     
 def main():
 
-    print("Running pir.py")
+    log.info("Running pir.py")
 
     # Start assuming screen on
     update_state(True)
@@ -72,7 +84,7 @@ def main():
     try:
         while running:
             time_delta = time() - last_motion
-            print(f'Time delta {time_delta}, display_on: {display_on}')
+            log.debug(f'Time delta {time_delta}, display_on: {display_on}')
         
             if (time() - last_motion) > QUIET_SECS and display_on:
                 screen_off()
@@ -80,7 +92,7 @@ def main():
     finally:
         pir.when_motion = None
         pir.close()
-        print("PIR closed")
+        log.info("PIR closed")
 
 
 if __name__ == "__main__":
