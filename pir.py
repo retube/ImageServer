@@ -6,11 +6,11 @@ from subprocess import run, CalledProcessError
 from time import time, sleep
 import os, signal
 
-STATUS_FILE: str = ""
-PIR_GPIO = 17           # GPIO pin for PIR OUT
-QUIET_SECS = 30        # blank after 5 minutes of no motion
-DISPLAY_ENV = ":0"      # X11 display
-XAUTHORITY = "/home/rich/.Xauthority"  # adjust if your user isn’t 'pi'
+STATUS_FILE: str = "temp/screen_status.txt"
+PIR_GPIO = 17
+QUIET_SECS = 300
+DISPLAY_ENV = ":0"
+XAUTHORITY = "/home/rich/.Xauthority"
 
 os.environ["DISPLAY"] = DISPLAY_ENV
 os.environ["XAUTHORITY"] = XAUTHORITY
@@ -83,10 +83,10 @@ def update_state(on: bool):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="PIR motion check script")
-    parser.add_argument("status_file", type=Path, help="Location of file to write screen status")
+    parser.add_argument("--timeout", type=int, default=300, help="Display timeout in seconds")
     args = parser.parse_args()
-    
-    STATUS_FILE = args.status_file
+
+    QUIET_SECS = max(10, args.timeout)
 
     main()
 

@@ -32,7 +32,7 @@ app = Flask(__name__)
 
 FILES: List[Path] = []   # indexed image files
 INTERVAL_MS: int = 10000  # client refresh interval in ms
-SCREEN_STATUS_FILE: str = ""
+SCREEN_STATUS_FILE: str = "temp/screen_status_txt"
 
 # Supported image extensions
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
@@ -185,7 +185,6 @@ def main():
 
     parser = argparse.ArgumentParser(description="Simple rotating image HTTP server")
     parser.add_argument("directory", type=Path, help="Directory to recursively index")
-    parser.add_argument("--screen_status_file", type=Path, default="static/screen_status.txt", help="Location of screen status file written by PIR")
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
     parser.add_argument("--port", type=int, default=8000, help="Port to bind (default: 8000)")
     parser.add_argument("--interval-ms", type=int, default=10000, help="Client refresh interval in ms")
@@ -194,7 +193,6 @@ def main():
 
     INTERVAL_MS = max(3000, int(args.interval_ms))
     FILES = index_directory(args.directory, all_files=args.all_files)
-    SCREEN_STATUS_FILE = args.screen_status_file
 
     if not FILES:
         print("[warn] No files found to index. The page will show 'no files'.")
