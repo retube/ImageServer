@@ -4,14 +4,11 @@ from pathlib import Path
 from gpiozero import MotionSensor
 from subprocess import run, CalledProcessError
 from time import time, sleep
-import os
-
+import os, signal
 
 STATUS_FILE: str = ""
-
-
 PIR_GPIO = 17           # GPIO pin for PIR OUT
-QUIET_SECS = 300        # blank after 5 minutes of no motion
+QUIET_SECS = 30        # blank after 5 minutes of no motion
 DISPLAY_ENV = ":0"      # X11 display
 XAUTHORITY = "/home/rich/.Xauthority"  # adjust if your user isn’t 'pi'
 
@@ -21,6 +18,7 @@ os.environ["XAUTHORITY"] = XAUTHORITY
 pir = MotionSensor(PIR_GPIO)
 last_motion = time()
 display_on = True
+running = True
 
 def safe_run(cmd):
     try:
@@ -29,36 +27,55 @@ def safe_run(cmd):
         pass
 
 def screen_on():
+    print(f'Turning screen ON {time()}')
     safe_run(["xset", "dpms", "force", "on"])
-    write_state(True)
+    update_state(True)
 
 def screen_off():
+    print(f'Turning screen OFF {time()}')
     safe_run(["xset", "dpms", "force", "off"])
-    write_state(False)
+    update_state(False)
 
 def on_motion():
-    global last_motion, display_on
+    print(f'Motion detected {time()}')
+    global last_motion
     last_motion = time()
     if not display_on:
         screen_on()
-        display_on = True
 
 pir.when_motion = on_motion
 
+def shutdown(signum, frame):
+    print("Caught shutdown")
+    global running
+    running = False
+    
+signal.signal(signal.SIGINT, shutdown)
+signal.signal(signal.SIGTERM, shutdown)
+    
 def main():
 
+    print("Running pir.py")
+
+    #safe_run(["xset", "s", "off"])  # disable screensaver timer
+    #safe_run(["xset", "-dpms"])
+
+    try:
+        while running:
+            time_delta = time() - last_motion
+            print(f'Time delta {time_delta}')
+        
+            if (time() - last_motion) > QUIET_SECS and display_on:
+                screen_off()
+            sleep(1)
+    finally:
+        print("Closing PIR")
+        pir.when_motion = None
+        pir.close()
+
+def update_state(on: bool):
     global display_on
-
-    safe_run(["xset", "s", "off"])  # disable screensaver timer
-    safe_run(["xset", "-dpms"])
-
-    while True:
-        if (time() - last_motion) > QUIET_SECS and display_on:
-            screen_off()
-            display_on = False
-        sleep(1)
-
-def write_state(on: bool):
+    display_on = on
     with open(STATUS_FILE, "w") as f:
         f.write("ON" if on else "OFF")
 
