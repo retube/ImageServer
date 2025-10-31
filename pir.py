@@ -45,17 +45,17 @@ def safe_run(cmd):
         pass
 
 def screen_on():
-    log.info(f'Turning screen ON {time()}')
+    log.info("Turning screen ON")
     safe_run(["xset", "dpms", "force", "on"])
     update_state(True)
 
 def screen_off():
-    log.info(f'Turning screen OFF {time()}')
+    log.info("Turning screen OFF")
     safe_run(["xset", "dpms", "force", "off"])
     update_state(False)
 
 def on_motion():
-    log.info(f'Motion detected {time()}')
+    log.info("Motion detected")
     global last_motion
     last_motion = time()
     if not display_on:
