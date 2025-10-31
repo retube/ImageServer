@@ -63,15 +63,15 @@ def main():
     try:
         while running:
             time_delta = time() - last_motion
-            print(f'Time delta {time_delta}')
+            print(f'Time delta {time_delta}, display_on: {display_on}')
         
             if (time() - last_motion) > QUIET_SECS and display_on:
                 screen_off()
             sleep(1)
     finally:
-        print("Closing PIR")
         pir.when_motion = None
         pir.close()
+        print("PIR closed")
 
 def update_state(on: bool):
     global display_on
