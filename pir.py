@@ -20,6 +20,12 @@ last_motion = time()
 display_on = True
 running = True
 
+def update_state(on: bool):
+    global display_on
+    display_on = on
+    with open(STATUS_FILE, "w") as f:
+        f.write("ON" if on else "OFF")
+
 def safe_run(cmd):
     try:
         return run(cmd, check=False)
@@ -57,6 +63,9 @@ def main():
 
     print("Running pir.py")
 
+    # Start assuming screen on
+    update_state(True)
+
     #safe_run(["xset", "s", "off"])  # disable screensaver timer
     #safe_run(["xset", "-dpms"])
 
@@ -72,12 +81,6 @@ def main():
         pir.when_motion = None
         pir.close()
         print("PIR closed")
-
-def update_state(on: bool):
-    global display_on
-    display_on = on
-    with open(STATUS_FILE, "w") as f:
-        f.write("ON" if on else "OFF")
 
 
 if __name__ == "__main__":
