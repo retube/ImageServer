@@ -83,8 +83,8 @@ def main():
     # Start assuming screen on
     update_state(True)
 
-    #safe_run(["xset", "s", "off"])  # disable screensaver timer
-    #safe_run(["xset", "-dpms"])
+    safe_run(["xset", "dpms" "0" "0" "0"])
+    safe_run(["xset", "s", "off"])
 
     try:
         while running:
