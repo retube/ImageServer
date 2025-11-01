@@ -5,26 +5,43 @@ Runs a Flask webapp, PIR motion detector service and chromium in kiosk mode on a
 
 ## Requirements
 
-- A Raspberry Pi 4B or higher
+- A Raspberry Pi 4B 
+- A PIR motion detector
 - A USB thumb drive with image library (not obligatory, can also be saved directly on the Pi's micro SD if you prefer)
 
 ## Features
 
-- Randomly auto rotates through any image collection; handles 100k+ images
+- Auto rotates through any image collection; handles 100k+ images
 - Configurable image refresh frequency
-- Power saving: screen will power down if no motion detected (timeout configurable), and halt refreshing until motion next detected
-- Manual pause and next/prev buttons
+- Power saving: screen will power down if no motion detected (timeout configurable), and halt image refreshing until motion next detected
+- Manual pause, next and prev buttons
 - Displays date taken per EXIF data
 
-## Setup
+## Hardware Setup
 
-- Set your window manager to X11 (not Wayland/Wayfire). Can be toggled by:
+- Micro SD card installed with Raspbian image
+- Pi Micro HDMI to monitor
+- 2x Pi USB 2.0 to keyboard + mouse (can later be disconnected/removed)
+- PIR VCC to GPIO pin 2
+- PIR GRD to GPIO pin 4
+- PIR OUT to GPIO pin 11 (GPIO 17)
+
+Pi power: USB-C from dedicated power supply or monitor USB-C with minimum 45 watts
+
+## Software install
+
+- Am sure there were some python libs that needed pip installing, but my history is not showing anything...
+
+
+## System setup
+
+- Set your window manager to X11 (not Wayland/Wayfire). Window manager can be checked/toggled by:
 
 ```
 	> sudo raspi-config
 ```
 
-then Advanced Options -> Wayland/X11 
+   then Advanced Options -> Wayland/X11 
 
 - Enable Screen Blanking: Preferences -> Raspberry Pi Configuration -> Display -> Screen Banking On
     - This ensures DPMS is running, needed by the PIR motion service
@@ -40,5 +57,7 @@ then Advanced Options -> Wayland/X11
     > sudo systemctl enable --now image-viewer.service
     > sudo systemctl enable --now chromium-kiosk.service
 ```
+
+And now with any luck, you are in kiosk mode showing images. Alt-F4 to exit and get the desktop back.
 
 
