@@ -24,15 +24,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 from functools import lru_cache
-import random
 from flask import Flask, abort, jsonify, make_response, render_template, send_file
 from PIL import Image, ExifTags
 
 app = Flask(__name__)
 
-FILES: List[Path] = []   # indexed image files
-INTERVAL_MS: int = 10000  # client refresh interval in ms
-SCREEN_STATUS_FILE: str = "temp/screen_status.txt"
+FILES: List[Path] = []
+INTERVAL_MS: int = 10000
+
+SCREEN_STATUS_FILE: Path = Path.home() / "temp" / "screen_status.txt"
+SCREEN_STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 # Supported image extensions
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}

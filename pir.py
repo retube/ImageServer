@@ -6,12 +6,17 @@ from subprocess import run, CalledProcessError
 from time import time, sleep
 import os, signal, logging, logging.handlers
 
-STATUS_FILE: str = "temp/screen_status.txt"
-PIR_GPIO = 17
-QUIET_SECS = 300
-DISPLAY_ENV = ":0"
-XAUTHORITY = "/home/rich/.Xauthority"
-LOG_PATH = "/home/rich/temp/pir.log"
+PIR_GPIO: int = 17
+QUIET_SECS: int = 300
+DISPLAY_ENV: str = ":0"
+
+HOME: Path = Path.home()
+
+STATUS_FILE: Path = Path.home() / "temp" / "screen_status.txt"
+STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+XAUTHORITY: Path = Path.home() / "Xauthority"
+LOG_PATH: Path = Path.home() / "temp" / "pir.log"
 
 os.environ["DISPLAY"] = DISPLAY_ENV
 os.environ["XAUTHORITY"] = XAUTHORITY
@@ -38,7 +43,7 @@ def update_state(on: bool):
     with open(STATUS_FILE, "w") as f:
         f.write("ON" if on else "OFF")
 
-def safe_run(cmd):
+def safe_run(cmd: str):
     try:
         return run(cmd, check=False)
     except FileNotFoundError:

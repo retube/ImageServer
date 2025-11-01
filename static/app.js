@@ -48,12 +48,14 @@
     pos = found >= 0 ? found : 0;
   }
 
+  /*
   async function refreshCount() {
     try {
       const r = await fetch('/count', { cache: 'no-store' });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const j = await r.json();
       if (typeof j.count === 'number' && j.count !== count) {
+          console.log("HERE")
         const currentIndex = order.length ? order[pos] : null;
         count = j.count;
         setCount(count);
@@ -65,6 +67,7 @@
     }
   }
 
+*/
   function srcFor(index) {
     return `/file/${index}?t=${Date.now()}`;
   }
@@ -95,6 +98,9 @@
   }
 
   async function showByPos(p) {
+
+    console.log("showByPos")
+
     if (count === 0 || order.length === 0) { setStatus('no files'); return; }
     pos = ((p % order.length) + order.length) % order.length; // safe modulo
 
@@ -177,7 +183,7 @@
   setCount(count);
   setDateText('—');
   if (count > 0) buildOrder(null);
-  refreshCount();
+  //refreshCount();
   showByPos(0);
   start();
   // Add event listeners for dropdown options
