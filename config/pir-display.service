@@ -1,0 +1,20 @@
+[Unit]
+Description=PIR-controlled display power (X11, Bookworm)
+After=graphical.target
+
+[Service]
+User=rich
+Group=rich
+WorkingDirectory=/home/rich/Projects/ImageServer
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/rich/.Xauthority
+Environment=PIR_LOG_PATH=/home/rich/temp/pir.log
+ExecStart=/usr/bin/python3 -u /home/rich/Projects/ImageServer/pir.py --timeout 300
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=5
+
+[Install]
+WantedBy=graphical.target
+

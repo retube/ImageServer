@@ -15,7 +15,7 @@ HOME: Path = Path.home()
 STATUS_FILE: Path = Path.home() / "temp" / "screen_status.txt"
 STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-XAUTHORITY: Path = Path.home() / "Xauthority"
+XAUTHORITY: str = str(Path.home() / "Xauthority")
 LOG_PATH: Path = Path.home() / "temp" / "pir.log"
 
 os.environ["DISPLAY"] = DISPLAY_ENV
@@ -83,7 +83,7 @@ def main():
     # Start assuming screen on
     update_state(True)
 
-    safe_run(["xset", "dpms" "0" "0" "0"])
+    safe_run(["xset", "dpms", "0", "0", "0"])
     safe_run(["xset", "s", "off"])
 
     try:

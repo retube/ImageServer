@@ -1,0 +1,15 @@
+[Unit]
+Description=Image Viewer Flask App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=rich
+Group=rich
+WorkingDirectory=/home/rich/Projects/ImageServer
+ExecStart=/usr/bin/python3 /home/rich/Projects/ImageServer/app.py "/home/rich/Pictures" --interval-ms 10000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

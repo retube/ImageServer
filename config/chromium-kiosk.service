@@ -1,0 +1,24 @@
+[Unit]
+Description=Chromium Kiosk
+After=graphical.target image-viewer.service
+Wants=image-viewer.service
+
+[Service]
+User=rich
+Group=rich
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/rich/.Xauthority
+# Optional: wait for Flask to be ready (needs curl: sudo apt install -y curl)
+# ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do curl -fsS http://127.0.0.1:8000/health >/dev/null && exit 0; sleep 1; done; exit 0'
+ExecStart=/usr/bin/chromium-browser \
+  --kiosk \
+  --incognito \
+  --no-first-run \
+  --disable-session-crashed-bubble \
+  --disable-restore-session-state \
+  --check-for-update-interval=31536000 \
+  http://127.0.0.1:8000
+Restart=no
+
+[Install]
+WantedBy=graphical.target
