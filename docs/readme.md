@@ -1,7 +1,7 @@
 
 # ImageServer - A simple digital photo frame app
 
-Runs a Flask webapp, PIR motion detector service and chromium in kiosk mode on a Raspberry Pi, turning your monitor into a digital photo screen
+Runs a Flask webapp, PIR motion detector service and chromium in kiosk mode on a Raspberry Pi, turning your monitor into a digital photo album
 
 ## Requirements
 
@@ -46,7 +46,7 @@ Pi power: USB-C from dedicated power supply or monitor USB-C with minimum 45 wat
 - Enable Screen Blanking: Preferences -> Raspberry Pi Configuration -> Display -> Screen Banking On
     - This ensures DPMS is running, needed by the PIR motion service
 
-- Copy the three systemctl scripts in `config/` to `/etc/systemd/system/`. Change user names and path to images as appropriate
+- Copy the three systemctl scripts in `config/` to `/etc/systemd/system/`. Change user names and path to images as appropriate.
 
 
 - Add to system boot, and start immediately:
