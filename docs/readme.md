@@ -16,28 +16,29 @@ Runs a Flask webapp, PIR motion detector service and chromium in kiosk mode on a
 - Manual pause and next/prev buttons
 - Displays date taken per EXIF data
 
-
 ## Setup
 
 - Set your window manager to X11 (not Wayland/Wayfire). Can be toggled by:
 
+```
 	> sudo raspi-config
+```
 
 then Advanced Options -> Wayland/X11 
 
-- Enable Screen Blanking: Preferences -> Raspberry Pi Configuration -> Display -> Screen Banking On)
-    - This ensures DPMS is running
+- Enable Screen Blanking: Preferences -> Raspberry Pi Configuration -> Display -> Screen Banking On
+    - This ensures DPMS is running, needed by the PIR motion service
+
+- Copy the three systemctl scripts in `config/` to `/etc/systemd/system/`. Change user names and path to images as appropriate
 
 
-- Copy the three systemctl scripts in config/ to /etc/systemd/system/. Change user names and path to images as appropriate
+- Add to system boot, and start immediately:
 
-
- - Add to startup and start immediately:
-
+```
     > sudo systemctl daemon-reload
     > sudo systemctl enable --now pir-display.service
     > sudo systemctl enable --now image-viewer.service
-    > sudo systemctl enable --now chromium.service
-
+    > sudo systemctl enable --now chromium-kiosk.service
+```
 
 
