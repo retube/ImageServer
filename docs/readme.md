@@ -30,8 +30,19 @@ Pi power: USB-C from dedicated power supply or monitor USB-C with minimum 45 wat
 
 ## Software install
 
-- Am sure there were some python libs that needed pip installing, but my history is not showing anything...
+```
+	> git clone https://github.com/retube/ImageServer.git
+```
 
+- Check you have the necessary python packages installed - just run the two scripts to check any dependency failures:
+
+```
+	> cd ImageServer
+	> ./pir.py
+	> ./app.py "/path/to/image_folder"
+```
+
+and `pip install` anything missing.
 
 ## System setup
 
