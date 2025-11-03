@@ -28,6 +28,8 @@ Runs a Flask webapp, PIR motion detector service and chromium in kiosk mode on a
 
 Pi power: USB-C from dedicated power supply or monitor USB-C with minimum 45 watts
 
+PIR signal timing: you want the "motion changed" signal to trigger for sub < 5 seconds, so you may need to tweak the PIR timer
+
 ## Software install
 
 ```
@@ -56,6 +58,8 @@ and `pip install` anything missing.
 
 - Enable Screen Blanking: Preferences -> Raspberry Pi Configuration -> Display -> Screen Banking On
     - This ensures DPMS is running, needed by the PIR motion service
+
+- Turn on Desktop Auto Login:  Preferences -> Raspberry Pi Configuration -> Display -> Desktop Auto Login On
 
 - Copy the three systemctl scripts in `config/` to `/etc/systemd/system/`. Change user names and path to images as appropriate.
 

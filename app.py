@@ -27,26 +27,26 @@ from functools import lru_cache
 from flask import Flask, abort, jsonify, make_response, render_template, send_file
 from PIL import Image, ExifTags
 
-app = Flask(__name__)
 
-FILES: List[Path] = []
-INTERVAL_MS: int = 10000
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
+
+INTERVAL_MS = max(5000, int(os.environ.get("INTERVAL_MS", 120000)))
+IMAGE_DIR = Path(os.environ.get("IMAGE_DIR")) if os.environ.get("IMAGE_DIR") else None
 
 SCREEN_STATUS_FILE: Path = Path.home() / "temp" / "screen_status.txt"
 SCREEN_STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-# Supported image extensions
-IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff"}
+FILES: list[Path] = []
 
-# ------------------------------------------------------------------------------
-# Directory indexing
-# ------------------------------------------------------------------------------
-def index_directory(root: Path, all_files: bool) -> List[Path]:
-    if not root.exists() or not root.is_dir():
-        raise ValueError(f"Not a directory: {root}")
+
+def index_directory(all_files: bool = False):
+    global FILES
+
+    if IMAGE_DIR is None or not IMAGE_DIR.exists() or not IMAGE_DIR.is_dir():
+        raise ValueError(f"Invalid path for IMAGE_DIR: {IMAGE_DIR}")
 
     collected: List[Path] = []
-    for dirpath, _dirnames, filenames in os.walk(root):
+    for dirpath, _dirnames, filenames in os.walk(IMAGE_DIR):
         for fn in filenames:
             p = Path(dirpath) / fn
             if all_files:
@@ -54,13 +54,15 @@ def index_directory(root: Path, all_files: bool) -> List[Path]:
             else:
                 if p.suffix.lower() in IMAGE_EXTS:
                     collected.append(p)
-    # Sorting gives deterministic order; for 100k files this is still usually fine.
+
     collected.sort(key=lambda p: str(p.resolve()))
-    return collected
+    FILES = collected
+    #print("\n".join(map(str, FILES)))
+    print(f"Indexed {len(FILES)} file(s). Example: /file/0 -> {FILES[0]}")
 
 
 # ------------------------------------------------------------------------------
-# On-demand EXIF helpers (cached)
+# On-demand EXIF helpers
 # ------------------------------------------------------------------------------
 def _exif_date_from_pillow(img: "Image.Image") -> str | None:
     """Extracts EXIF date fields and returns ISO 8601 UTC string, if found."""
@@ -116,8 +118,11 @@ def _compute_meta_cached(path_str: str, mtime: float) -> dict:
 
 
 # ------------------------------------------------------------------------------
-# HTTP endpoints
+# Flask application logic
 # ------------------------------------------------------------------------------
+
+app = Flask(__name__)
+
 @app.get("/healthz")
 def healthz():
     return {"ok": True, "count": len(FILES)}
@@ -178,30 +183,24 @@ def index_page():
     return render_template("index.html", count=len(FILES), interval_ms=INTERVAL_MS)
 
 
-# ------------------------------------------------------------------------------
-# Entrypoint
-# ------------------------------------------------------------------------------
-def main():
-    global FILES, INTERVAL_MS, SCREEN_STATUS_FILE
-
-    parser = argparse.ArgumentParser(description="Simple rotating image HTTP server")
-    parser.add_argument("directory", type=Path, help="Directory to recursively index")
-    parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind (default: 8000)")
-    parser.add_argument("--interval-ms", type=int, default=10000, help="Client refresh interval in ms")
-    parser.add_argument("--all-files", action="store_true", help="Index ALL files, not just images")
-    args = parser.parse_args()
-
-    INTERVAL_MS = max(3000, int(args.interval_ms))
-    FILES = index_directory(args.directory, all_files=args.all_files)
-
-    if not FILES:
-        print("[warn] No files found to index. The page will show 'no files'.")
-    else:
-        print(f"Indexed {len(FILES)} file(s). Example: /file/0 -> {FILES[0]}")
-
-    app.run(host=args.host, port=args.port, debug=False, threaded=True)
-
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(description="Simple rotating image HTTP server")
+    parser.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8000, help="Port to bind (default: 8000)")
+    parser.add_argument("--image_dir", required=True, type=Path, help="Image directory")
+    parser.add_argument("--interval-ms", type=int, default=10000, help="Client refresh interval in ms")
+
+    args = parser.parse_args()
+
+    IMAGE_DIR = args.image_dir
+    INTERVAL_MS = args.interval_ms
+
+    index_directory()
+
+    app.run(host=args.host, port=args.port, debug=True)
+
+else:
+    index_directory()
+
